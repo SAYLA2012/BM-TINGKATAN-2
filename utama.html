@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Utama RPM - Cikgu Suhaila</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-yellow: #fef9c3;
+            --accent-yellow: #fbbf24;
+            --black-deep: #121212;
+            --black-soft: #1f1f1f;
+            --white: #ffffff;
+            --text-muted: #6b7280;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--primary-yellow);
+            background-image: radial-gradient(circle at 10% 20%, rgba(251, 191, 36, 0.1) 0%, transparent 40%);
+            color: var(--black-deep);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header Navigation */
+        nav.top-bar {
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .logo { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+        .logo i { color: var(--black-deep); background: var(--accent-yellow); padding: 8px; border-radius: 10px; }
+
+        /* Hero Section */
+        .hero {
+            padding: 4rem 1rem 2rem 1rem;
+            text-align: center;
+        }
+
+        .hero h1 { 
+            font-size: 2.5rem; font-weight: 800; color: var(--black-deep); 
+            text-transform: uppercase; line-height: 1.1; margin-bottom: 1rem;
+        }
+
+        .hero p { color: var(--black-soft); font-weight: 500; opacity: 0.7; font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+        /* Dashboard Grid */
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+        }
+
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .class-card {
+            background: var(--white);
+            border: 2px solid var(--black-deep);
+            border-radius: 28px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            box-shadow: 10px 10px 0px var(--black-deep);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .class-card:hover {
+            transform: translate(-5px, -5px);
+            box-shadow: 15px 15px 0px var(--accent-yellow);
+            background: var(--white);
+        }
+
+        .icon-circle {
+            width: 80px; height: 80px;
+            background: var(--primary-yellow);
+            border: 2px solid var(--black-deep);
+            border-radius: 22px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1.5rem auto;
+            font-size: 2rem;
+            transition: 0.3s;
+        }
+
+        .class-card:hover .icon-circle { background: var(--black-deep); color: var(--accent-yellow); transform: rotate(-5deg); }
+
+        .class-card h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .class-card p { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; margin-bottom: 1.5rem; }
+
+        .btn-enter {
+            background: var(--black-deep);
+            color: var(--white);
+            padding: 10px 25px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center; gap: 8px;
+            transition: 0.3s;
+        }
+
+        /* Quick Info Bar */
+        .quick-info {
+            display: flex; justify-content: center; gap: 2rem; margin-top: 3rem; flex-wrap: wrap;
+        }
+        .info-pill {
+            background: rgba(0,0,0,0.05); padding: 10px 20px; border-radius: 50px;
+            font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 10px;
+        }
+
+        footer { text-align: center; padding: 3rem; margin-top: auto; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.8rem; }
+            .class-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-bar">
+        <div class="logo">
+            <i class="fa-solid fa-graduation-cap"></i>
+            EDUSYSTEM v2.0
+        </div>
+        <div style="font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;">
+            <i class="fa-solid fa-circle-user"></i> CIKGU SUHAILA
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Rekod Perkembangan Murid<br><span style="color: var(--black-muted);">Bahasa Melayu Tingkatan 2</span></h1>
+        <p>Sila pilih kelas untuk mengurus rekod penghantaran kerja, pemantauan kurikulum, dan perkembangan akademik murid.</p>
+    </section>
+
+    <div class="container">
+        <div class="class-grid">
+            <a href="https://sayla2012.github.io/BM-TINGKATAN-2/" class="class-card">
+                <div class="icon-circle"><i class="fa-solid fa-book-open"></i></div>
+                <h3>2 AD-DARIMI</h3>
+                <p>Rekod Kemahiran & Tatabahasa</p>
+                <div class="btn-enter">MASUK KELAS <i class="fa-solid fa-arrow-right"></i></div>
+            </a>
+
+            <a href="URL_BORANG_GHAZALI.html" class="class-card">
+                <div class="icon-circle"><i class="fa-solid fa-pen-nib"></i></div>
+                <h3>2 AL-GHAZALI</h3>
+                <p>Rekod Kemahiran & Tatabahasa</p>
+                <div class="btn-enter">MASUK KELAS <i class="fa-solid fa-arrow-right"></i></div>
+            </a>
+
+            <a href="URL_BORANG_IDIRISI.html" class="class-card">
+                <div class="icon-circle"><i class="fa-solid fa-microscope"></i></div>
+                <h3>2 AL-IDIRISI</h3>
+                <p>Rekod Kemahiran & Tatabahasa</p>
+                <div class="btn-enter">MASUK KELAS <i class="fa-solid fa-arrow-right"></i></div>
+            </a>
+        </div>
+
+        <div class="quick-info">
+            <div class="info-pill"><i class="fa-solid fa-calendar"></i> SESI 2024/2025</div>
+            <div class="info-pill"><i class="fa-solid fa-users"></i> 3 KELAS AKTIF</div>
+            <div class="info-pill"><i class="fa-solid fa-shield-halved"></i> DATA DIJAMIN SELAMAT</div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 SISTEM RPM DIGITAL - CIKGU SUHAILA. DESIGNED FOR EXCELLENCE.
+    </footer>
+
+</body>
+</html>
