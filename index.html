@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SysBijak v2.2 - Cikgu Suhaila</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0c10;
+            --gold: #c5a059;
+            --gold-grad: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728);
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: #fff; overflow-x: hidden; }
+
+        /* --- HEADER --- */
+        .header-section { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; }
+        @media (min-width: 768px) { .header-section { flex-direction: row; justify-content: center; text-align: left; gap: 50px; } }
+
+        .formal-frame { width: 160px; height: 200px; padding: 10px; background: var(--card-bg); border: 1px solid rgba(191,149,63,0.3); position: relative; }
+        .formal-frame::before { content: ''; position: absolute; top: -5px; left: -5px; width: 30px; height: 30px; border-top: 3px solid var(--gold); border-left: 3px solid var(--gold); }
+        .image-wrapper { width: 100%; height: 100%; background: #111; overflow: hidden; }
+        .teacher-img { width: 100%; height: 100%; object-fit: cover; }
+
+        .hero-text h1 { font-size: 2.2rem; background: var(--gold-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+        .hero-text p { color: #aaa; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* --- DASHBOARD --- */
+        .main-container { max-width: 1000px; margin: 0 auto; padding: 15px; }
+        .class-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        @media (min-width: 768px) { .class-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .class-card { background: var(--card-bg); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+        .btn-primary { display: block; width: 100%; padding: 16px; margin-top: 15px; background: var(--gold-grad); color: #000; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.85rem; }
+
+        /* --- CLASS VIEW --- */
+        #class-view { display: none; position: fixed; inset: 0; background: #fff; color: #000; z-index: 1000; overflow-y: auto; }
+        .sticky-header { position: sticky; top: 0; background: var(--bg); color: #fff; padding: 15px; display: flex; align-items: center; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        
+        /* Bar Tab boleh scroll ke kiri kanan jika banyak */
+        .tab-nav { display: flex; overflow-x: auto; background: #f8f8f8; padding: 10px; gap: 10px; border-bottom: 1px solid #eee; -webkit-overflow-scrolling: touch; }
+        .tab-nav::-webkit-scrollbar { display: none; }
+        
+        .tab-btn { padding: 10px 20px; border: none; border-radius: 25px; white-space: nowrap; font-weight: 600; background: #eee; color: #666; font-size: 0.75rem; }
+        .tab-btn.active { background: var(--gold); color: #fff; }
+
+        .student-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid #eee; }
+        .student-name { font-size: 0.82rem; font-weight: 600; text-transform: uppercase; max-width: 65%; color: #333; }
+        select { padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-weight: 800; font-size: 0.8rem; }
+        .status-hantar { background: #dcfce7 !important; border-color: #22c55e !important; color: #166534; }
+
+        /* --- HISTORY SECTION --- */
+        .history-box { background: #f0f4f8; padding: 20px; border-top: 4px solid var(--gold); margin-top: 30px; }
+        .history-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .history-result { background: #fff; border-radius: 8px; padding: 15px; border: 1px solid #ddd; min-height: 50px; font-size: 0.85rem; }
+
+        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; text-align: center; }
+        .spinner { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--gold); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="dashboard">
+        <header class="header-section">
+            <div class="formal-frame">
+                <div class="image-wrapper"><img src="https://lh3.googleusercontent.com/d/197UExoqRO_hHp-DaIH5NGT9Icv-SQjh7" class="teacher-img"></div>
+            </div>
+            <div class="hero-text">
+                <p>Rekod Pentaksiran Digital</p>
+                <h1>CIKGU SUHAILA</h1>
+                <div style="font-size: 0.85rem; color: #888; letter-spacing: 1px;">SMK TAMAN BUNGA RAYA 1</div>
+            </div>
+        </header>
+
+        <div class="main-container">
+            <div class="class-grid">
+                <div class="class-card"><h3>BM: 2 AD DARIMI</h3><button class="btn-primary" onclick="openClass('2 AD DARIMI', 'BM')">DATA SEMAKAN</button></div>
+                <div class="class-card"><h3>BM: 2 AL-GHAZALI</h3><button class="btn-primary" onclick="openClass('2 AL-GHAZALI', 'BM')">DATA SEMAKAN</button></div>
+                <div class="class-card"><h3>BM: 2 AL-IDRISI</h3><button class="btn-primary" onclick="openClass('2 AL-IDRISI', 'BM')">DATA SEMAKAN</button></div>
+                <div class="class-card" style="border: 2px solid var(--gold);">
+                    <h3 style="color: var(--gold)">ASK: 2 IBNU SIRIN</h3>
+                    <button class="btn-primary" onclick="openClass('ASAS SAINS KOMPUTER', 'ASK')">DATA SEMAKAN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="class-view">
+        <div class="sticky-header">
+            <button onclick="closeClass()" style="background:none; border:none; color:white; font-size:1rem; margin-right:15px; font-weight: 800;"><i class="fa-solid fa-chevron-left"></i> KEMBALI</button>
+            <h2 id="active-title" style="font-size: 0.9rem;"></h2>
+        </div>
+
+        <div id="tab-container" class="tab-nav"></div>
+
+        <div style="padding: 20px; background: #fff; border-bottom: 8px solid #f4f4f4;">
+            <label style="font-size: 0.7rem; font-weight: 800; color: #666;">TARIKH</label>
+            <input type="date" id="tarikh" style="width:100%; padding:14px; margin-bottom:15px; border:1px solid #ddd; border-radius: 8px;">
+            <label style="font-size: 0.7rem; font-weight: 800; color: #666;">TAJUK PEMBELAJARAN</label>
+            <input type="text" id="tajuk" placeholder="Masukkan tajuk hari ini..." style="width:100%; padding:14px; border:1px solid #ddd; border-radius: 8px;">
+        </div>
+
+        <div id="list-murid"></div>
+
+        <div class="history-box">
+            <h3 style="font-size: 0.85rem; color: #000;"><i class="fa-solid fa-clock-rotate-left"></i> SEMAK REKOD LAMPAU</h3>
+            <div class="history-controls">
+                <select id="filter-tarikh" onchange="tapisRekod()"><option value="">Pilih Tarikh</option></select>
+                <select id="filter-tajuk" onchange="tapisRekod()"><option value="">Pilih Tajuk</option></select>
+            </div>
+            <div id="hasil-tapis" class="history-result"><i>Pilih tarikh atau tajuk untuk semak.</i></div>
+        </div>
+
+        <div style="padding: 25px; background: #fff; position: sticky; bottom: 0; box-shadow: 0 -10px 20px rgba(0,0,0,0.05); text-align: center;">
+            <button class="btn-primary" onclick="simpanKeSheets()">HANTAR & SIMPAN DATA</button>
+        </div>
+    </div>
+
+    <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <p style="color: #fff; margin-top: 20px; font-weight: 600;">MENYIMPAN DATA...</p>
+    </div>
+
+    <script>
+        const URL_BM = "https://script.google.com/macros/s/AKfycbzwAjDoWkvyry5q0InxF2GAC2Mom0PBhZWYpM1WfI1D3FUje6ifREkn95WsP0M4TiRt/exec";
+        const URL_ASK = "https://script.google.com/macros/s/AKfycbz699tikjUbasp7jbYFmTuj_QAQGPJAv_3croa7CSXUjKnv-_9nINZfKQBSlE97pIa9/exec";
+
+        const dataMurid = {
+            "2 AD DARIMI": ["ADAM MUHAMMAD ARIF BIN ABDUL HAKIM", "AHMAD AZIM MUTTAQIN BIN MOHD FAZIL", "AQIL HAIKAL BIN KHARUL AZLI", "ASHRAFF IZZQIEL BIN SAIPUL ANWAR NASUTION", "DIANA SHAFITRI BINTI AMIR", "MUHAIMIN FARIS ZAKIR BIN MOHD ZAIRI", "MUHAMMAD AATIF ZAYYAD BIN AMIRUDDIN", "MUHAMMAD ADAM ZAQUAN BIN MOHD SUKRI", "MUHAMMAD AIZUDDIN ADHA BIN AZMAN", "MUHAMMAD ASYRAFF SYAHIRAN BIN MOHD RIDUWAN", "MUHAMMAD AZRIN HAKEM BIN SUHAIMI", "MUHAMMAD NORHADI BIN NOOR MALHAFIZ", "MUHAMMAD SHAMSUL AMIRUL DANISH BIN MOHD SHAIFUL BAHRI", "MUHAMMAD UKASYAH ZARQASYI BIN AZIWA", "MUHAMMAD ZAFRAN QAYYIM BIN SUHAIRI", "NAJWA NAJEHA BINTI MUHAMMAD AMIRUL", "NOOR ARINA ADHWA BINTI NOAZMI", "NOR ALIYA NATASYA BINTI ABDUL MALIK", "NORFARZANA BINTI ABU BAKAR", "NUR AMIRAH BATRISYIA BINTI MOHD HAFIZAN", "NUR AULIA HAZIRA BINTI MOHD NORHASLAN", "NUR DAMIA QAISARA BINTI RAZZIS", "NUR DELISHA SAMEERA BINTI HASAN BASRI", "NUR HIDAYAH SOFIA BINTI AZMI", "NUR LIYANA SOFIA BINTI SAIFUL BAHARI", "NUR NADHIRAH BINTI MOHAMAD KHIR JOHARI", "NUR QHAIREEN AISYAH BINTI AL-MUSTAQIM BILLAH", "PUTERI ABABIL BT ABDULLAH", "PUTERI NURELESHA BINTI AZUWAN", "SITI NORFARISHA DANIA BINTI MUHAMMAD FIRDAUS", "ZARA IRDINA BINTI MOHD ASRULNIZAM", "ZULFAQAR BIN ZULKIFLI", "ZULFIQAR BIN ZULKIFLI"],
+            "2 AL-GHAZALI": ["ABDUL AZIZ BIN MOHD NORHAN", "ANIS ALISA BINTI MOHAMAD RIDZUAN", "AWFIYAH NUR'BATRISYIA BINTI MOHD AMIRULLAH", "DHIA AMALIA BINTI ABDUL RAHMAN HO", "HANAN BINTI A'AMAR", "IZARA AINA BINTI ABDULLAH", "MASHALINDA BINTI MAHATHIR", "MOHAMAD FAHREZA SIDIK BIN ABDULLAH", "MOHAMAD IRFANHAFIZZY BIN MOHD YUSOFF", "MOHAMAD NOOR IZWAN ZAINUREEN BIN MOHD NORZAIHAN", "MUHAMAD HARITH DANISH BIN MUHAMAD ANWAR", "MUHAMAD RAYYAN FADHIL BIN ABDUL RAHMAN", "MUHAMMAD AFIF SHAKIRIN BIN MUHD AFNAN AIMAN", "MUHAMMAD AIDIL BIN HAMDI", "MUHAMMAD DANISH BIN MOHD NAZRI", "MUHAMMAD FAIRUZ FIRDAUS BIN MOHD FAIZAL", "MUHAMMAD ILMAN BIN IMAM RUYANI", "MUHAMMAD RAYYAN QAUSAR BIN MOHD ROZI", "MUHAMMAD RAYYAN RIZQI BIN MOHD FAIZAL", "MUHAMMAD SAIFUL HAFIZ BIN A.AZMAN", "MUHAMMAD SHAFIE DANIEL BIN MOHD SHAHRUL IQUAN", "NUR ADRIANA ALESYA BINTI MOHD FISOL", "NUR ALEESYA NADZIRA BINTI MOHD NADZRI", "NUR FATIN QAISARA BINTI ZULKIFLI", "NUR MALAIKA DAMIA BINTI GHAZALI", "NUR QASEH DAMIA BINTI MOHD ZAMRI", "NUR QASEH NASUHA BINTI MOHD RIZAN", "NUR ROHAIZATUL NAZMILA BINTI NOR ROLFAIZI", "NUR TRISHA LYDIANA BINTI RAMLI", "NUR ZULAIKHA BINTI MOHMAD APIZI", "NURSAHARA ZULAIKHA BINTI MASIRIN", "PUTRA IRFAN DANISH BIN MOHD RIZWAN", "PUTRIE QAISARA DAMIA BINTI IZWAN", "SYARIFAH NURFARHANA BINTI SYED ALFIAN"],
+            "2 AL-IDRISI": ["ARESZ MIQAEL BIN MOHD SHAHARIZAM", "DHIA QISYA QAISARA BINTI ABDUL FATTAH", "FATEHA NURQISTINA BINTI RASHDANNIZAM", "GAJAENTHRAN A/L THANGARAJU", "IFFAH NOREZATI BINTI ZULKURNAIN", "KUSHAHMIR MIKHAIL BIN KUMUZAMIR", "LUTFIR RAHMAN BIN AMRAN", "MAGESVARY A/P MANIAM", "MUHAMAD DANISH HAIKAL BIN FAIZOO", "MUHAMAD SAFI'E BIN ABDULLAH", "MUHAMMAD ADAM IMRAN BIN MOHD KHAIROL NIZAM", "MUHAMMAD ADRIE DARWISY BIN MUHAMMED KAMARULZAMAN", "MUHAMMAD AL-ADHA BIN MOHD AZMAN", "MUHAMMAD AZRIF ZAFRIL BIN KHAIRISHAM", "MUHAMMAD DARWISY IMAN BIN ZULKIFLEE", "MUHAMMAD FAIZ AIDIL BIN MUHAMMAD FAKHRI", "MUHAMMAD RAYYAN NAUFAL BIN SHAIFUL SHAFIEE", "MUHAMMAD SAIFUL MUZAMIL BIN SAIFUL ZAMRI", "MUHAMMAD SAUFI RAYYAN BIN ABDULLAH", "MUHAMMAD ZIKRA ADYAN BIN ZAMAN NURI", "NIK NUR SYAMIMIE BATRISYA BINTI DARUS", "NOOR HAFIZAH AZ ZAHRA BINTI BASHARUDDIN", "NOR LIDIYA FITRI BINTI MOHD AZRAD", "NUR DELISHA MARISSA BINTI KIA KAMARUL AZIZI", "NUR FATIN IMANI BINTI MOHD AZIZI", "NUR INSYIRAH ZULAIKA BINTI MOHAMAD RIDUAN", "NUR SARFINA BINTI MOHD FIRDAUS", "NURHANA SUFIYYAH BINTI MOHD HANAFIAH", "NURIMANNI DAWAMA SUCHI BINTI NORSAHRUL ALSUWAT", "NURLAILA IRDINA BINTI MOHAMAD FADIL", "NURUL HAFIZIANA YAZLIN BINTI HAYAZI", "SYAFIQAH ATIRAH BINTI ZALI", "UMASRI A/P ELAMARAN", "UNGKU MUHAMMAD HAZRIQ BIN UNGKU ZULKARNAIN"],
+            "ASAS SAINS KOMPUTER": ["ADREAN HAKEEM BIN ADZILZUL AZRIL", "AHMAD RAYYAN DARWISH BIN MOHD SUPIAN", "DERLISHA IWANA JAFNI BINTI HANIZAM", "ERYNA FARZANA BINTI MOHD YUSRI", "HARRAZ AISY UKAIL BIN MOHD AISAMUDDIN", "KASIH NURZAFIRAH IRDINA BINTI ZAIDI", "MOHAMMAD ADI PUTERA BIN ABDULLAH", "MUHAMMAD AISY AFIQ BIN MOHAMMAD SYAHIR", "MUHAMMAD DANISH HAQIF BIN AZHARNIZAM","MUHAMMAD HAZIQ ZIKRI BIN BAHARUDIN", "NOOR AFRINA AINA BINTI MOHD AIZAL", "NUR HIDAYAHTUL HUDA BINTI MOHD ISMAIL", "NUR QISYA ADELIA BINTI AHMAD SOLAHUDDIN", "PUTERI ASIYAH AISHAH BINTI ABDULLAH", "PUTRA RAZIF RAFA'L BIN RAZAK"]
+        };
+
+        let kelasAktif = "", subjekAktif = "", kemahiranAktif = "", rekodSesi = [];
+
+        function openClass(nama, subjek) {
+            kelasAktif = nama; subjekAktif = subjek;
+            document.getElementById('active-title').innerText = nama;
+            document.getElementById('class-view').style.display = 'block';
+            document.getElementById('tarikh').value = new Date().toISOString().split('T')[0];
+            
+            const tabBox = document.getElementById('tab-container');
+            if(subjek === 'ASK') {
+                tabBox.innerHTML = '<button class="tab-btn active">REKOD ASK</button>';
+                kemahiranAktif = "PENTAKSIRAN ASK";
+            } else {
+                tabBox.innerHTML = `
+                    <button class="tab-btn active" onclick="setTab('Mendengar', this)">Mendengar</button>
+                    <button class="tab-btn" onclick="setTab('Membaca', this)">Membaca</button>
+                    <button class="tab-btn" onclick="setTab('Menulis', this)">Menulis</button>
+                    <button class="tab-btn" onclick="setTab('Seni Bahasa', this)">Seni Bahasa</button>
+                    <button class="tab-btn" onclick="setTab('Tatabahasa', this)">Tatabahasa</button>
+                `;
+                kemahiranAktif = "Mendengar";
+            }
+            paparMurid(); updateDropdowns();
+        }
+
+        function setTab(k, btn) {
+            kemahiranAktif = k;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            paparMurid(); updateDropdowns();
+        }
+
+        function paparMurid() {
+            const list = document.getElementById('list-murid');
+            list.innerHTML = "";
+            dataMurid[kelasAktif].forEach(nama => {
+                const s = rekodSesi.find(r => r.nama === nama && r.kemahiran === kemahiranAktif);
+                list.innerHTML += `
+                    <div class="student-row">
+                        <div class="student-name">${nama}</div>
+                        <select onchange="simpanSesi('${nama}', this)" class="${s ? 'status-hantar' : ''}">
+                            <option value="BELUM">BELUM</option>
+                            <option value="HANTAR" ${s ? 'selected' : ''}>HANTAR</option>
+                        </select>
+                    </div>`;
+            });
+        }
+
+        function simpanSesi(nama, el) {
+            rekodSesi = rekodSesi.filter(r => !(r.nama === nama && r.kemahiran === kemahiranAktif));
+            if(el.value === "HANTAR") {
+                rekodSesi.push({
+                    tarikh: document.getElementById('tarikh').value,
+                    kelas: kelasAktif, nama: nama, kemahiran: kemahiranAktif,
+                    status: "HANTAR", tajuk: document.getElementById('tajuk').value || "-"
+                });
+                el.classList.add('status-hantar');
+            } else { el.classList.remove('status-hantar'); }
+        }
+
+        async function simpanKeSheets() {
+            if(rekodSesi.length === 0) return alert("Pilih sekurang-kurangnya satu murid!");
+            document.getElementById('loading').style.display = 'flex';
+            const target = (subjekAktif === 'ASK') ? URL_ASK : URL_BM;
+            
+            try {
+                for (let item of rekodSesi) {
+                    await fetch(target, { method: "POST", mode: "no-cors", body: JSON.stringify(item) });
+                }
+                
+                let history = JSON.parse(localStorage.getItem('eduHistory')) || [];
+                history = history.concat(rekodSesi);
+                localStorage.setItem('eduHistory', JSON.stringify(history));
+
+                alert("Data " + kelasAktif + " Berjaya Dihantar!");
+                resetBorang();
+            } catch (e) { alert("Ralat penghantaran! Periksa internet."); }
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function resetBorang() {
+            rekodSesi = [];
+            document.getElementById('tajuk').value = "";
+            paparMurid();
+            updateDropdowns();
+            document.getElementById('class-view').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateDropdowns() {
+            const history = JSON.parse(localStorage.getItem('eduHistory')) || [];
+            const filtered = history.filter(r => r.kelas === kelasAktif && r.kemahiran === kemahiranAktif);
+            const tarikhSet = [...new Set(filtered.map(r => r.tarikh))].sort().reverse();
+            const tajukSet = [...new Set(filtered.map(r => r.tajuk))];
+
+            document.getElementById('filter-tarikh').innerHTML = '<option value="">Tarikh</option>' + tarikhSet.map(t => `<option value="${t}">${t}</option>`).join('');
+            document.getElementById('filter-tajuk').innerHTML = '<option value="">Tajuk</option>' + tajukSet.map(t => `<option value="${t}">${t}</option>`).join('');
+            document.getElementById('hasil-tapis').innerHTML = '<i>Pilih tarikh atau tajuk untuk semak.</i>';
+        }
+
+        function tapisRekod() {
+            const history = JSON.parse(localStorage.getItem('eduHistory')) || [];
+            const fTarikh = document.getElementById('filter-tarikh').value;
+            const fTajuk = document.getElementById('filter-tajuk').value;
+            let res = history.filter(r => r.kelas === kelasAktif && r.kemahiran === kemahiranAktif);
+            
+            if(fTarikh) res = res.filter(r => r.tarikh === fTarikh);
+            if(fTajuk) res = res.filter(r => r.tajuk === fTajuk);
+
+            const hasil = document.getElementById('hasil-tapis');
+            if(res.length === 0) { hasil.innerHTML = "Tiada rekod."; return; }
+
+            hasil.innerHTML = `<div style="font-weight:800; color:var(--gold); margin-bottom:10px;">HADIR: ${res.length} MURID</div>` + 
+                              res.map((r, i) => `<div style="border-bottom:1px solid #eee; padding:8px 0; text-transform:uppercase; font-size:0.75rem;">${i+1}. ${r.nama}</div>`).join('');
+        }
+
+        function closeClass() { document.getElementById('class-view').style.display = 'none'; rekodSesi = []; }
+    </script>
+</body>
+</html>
